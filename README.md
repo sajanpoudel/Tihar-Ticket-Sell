@@ -285,39 +285,35 @@ npm start
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="[images/available-tickets.png](https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.23.44%E2%80%AFPM.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.23.44%E2%80%AFPM.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Available Tickets Display</strong></p>
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/ticket-management.png" alt="Ticket Management" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.26.21%E2%80%AFPM.png" alt="Ticket Management" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Ticket Management Interface</strong></p>
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/swap-interface.png" alt="Swap Interface" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.15%E2%80%AFPM.png" alt="Swap Interface" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Ticket Swap Interface</strong></p>
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/resale-section.png" alt="Resale Section" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.38%E2%80%AFPM.png?raw=true" alt="Resale Section" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Ticket Resale Section</strong></p>
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/manager-controls.png" alt="Manager Controls" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.30.02%E2%80%AFPM.png?raw=true" alt="Manager Controls" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Manager Control Panel</strong></p>
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/dark-mode.png" alt="Dark Mode" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.32.12%E2%80%AFPM.png?raw=true" alt="Dark Mode" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Dark Mode Theme</strong></p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/transaction-history.png" alt="Transaction History" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Transaction History</strong></p>
-</div>
 
 </div>
 
