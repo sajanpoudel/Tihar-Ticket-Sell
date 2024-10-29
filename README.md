@@ -280,7 +280,7 @@ npm start
 <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="[images/connect-wallet.png](https://raw.githubusercontent.com/sajanpoudel/Tihar-Ticket-Sell/refs/heads/main/images/Screenshot%202024-10-29%20at%207.19.52%E2%80%AFPM.png" alt="Connect Wallet" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.19.52%E2%80%AFPM.png" alt="Connect Wallet" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Connect Wallet Interface</strong></p>
 </div>
 
