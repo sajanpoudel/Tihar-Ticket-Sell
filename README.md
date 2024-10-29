@@ -2,6 +2,7 @@
 
 A decentralized ticket sale platform built on Ethereum (Sepolia testnet) that enables secure ticket purchasing, swapping, and reselling with automated service fee handling. The platform features a beautiful Tihar Festival-themed UI with dark/light mode support.
 
+
 ## 📁 Project Structure
 ```
 ticket-sale-platform/
@@ -23,7 +24,7 @@ ticket-sale-platform/
 └── package.json             # Project dependencies
 ```
 
-## 🛠 Tech Stack
+## �� Tech Stack
 
 ### Blockchain
 - Solidity ^0.8.17 (Smart Contract)
@@ -273,3 +274,91 @@ npm start
    - Clear browser cache
    - Check console for errors
    - Verify contract connection
+
+## 📱 Application Screenshots
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/connect-wallet.png" alt="Connect Wallet" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Connect Wallet Interface</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/available-tickets.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Available Tickets Display</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/ticket-management.png" alt="Ticket Management" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Ticket Management Interface</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/swap-interface.png" alt="Swap Interface" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Ticket Swap Interface</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/resale-section.png" alt="Resale Section" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Ticket Resale Section</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/manager-controls.png" alt="Manager Controls" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Manager Control Panel</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/dark-mode.png" alt="Dark Mode" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Dark Mode Theme</strong></p>
+</div>
+
+<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
+    <img src="images/transaction-history.png" alt="Transaction History" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <p align="center"><strong>Transaction History</strong></p>
+</div>
+
+</div>
+
+## 🎯 Features Demonstrated in Screenshots
+
+1. **Connect Wallet Interface**
+   - MetaMask integration
+   - Network validation
+   - Account display
+
+2. **Available Tickets Display**
+   - Day-based categorization
+   - Price information
+   - Ticket availability status
+
+3. **Ticket Management Interface**
+   - Owned ticket display
+   - Ticket details
+   - Management options
+
+4. **Ticket Swap Interface**
+   - Swap offer creation
+   - Swap acceptance
+   - Current offers display
+
+5. **Ticket Resale Section**
+   - Price setting
+   - Available resale tickets
+   - Purchase interface
+
+6. **Manager Control Panel**
+   - Price updates
+   - Ticket addition
+   - Statistics overview
+
+7. **Dark Mode Theme**
+   - Theme toggle
+   - Improved visibility
+   - Festival-themed elements
+
+8. **Transaction History**
+   - Recent activities
+   - Transaction details
+   - Status tracking
