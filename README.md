@@ -117,7 +117,7 @@ Contract deployed with:
 6. **Test the contract:**
 ```bash
 npx hardhat test
-```
+
 
 
   TicketSale Contract
