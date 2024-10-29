@@ -277,45 +277,46 @@ npm start
 
 ## 📱 Application Screenshots
 
-<div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px;">
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.19.52%E2%80%AFPM.png" alt="Connect Wallet" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Connect Wallet Interface</strong></p>
+<div style="width: 90%; background: #f8f9fa; border-radius: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <h3 style="text-align: center; margin-bottom: 15px;">Wallet Connection & Dashboard</h3>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.19.52%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.23.44%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+    </div>
+    <p style="text-align: center; margin-top: 10px;">Connect wallet interface and main dashboard view</p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.23.44%E2%80%AFPM.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Available Tickets Display</strong></p>
+<div style="width: 90%; background: #f8f9fa; border-radius: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <h3 style="text-align: center; margin-bottom: 15px;">Ticket Management</h3>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.26.21%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.15%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+    </div>
+    <p style="text-align: center; margin-top: 10px;">Ticket management interface and swap functionality</p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.26.21%E2%80%AFPM.png" alt="Ticket Management" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Ticket Management Interface</strong></p>
+<div style="width: 90%; background: #f8f9fa; border-radius: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <h3 style="text-align: center; margin-bottom: 15px;">Resale & Manager Controls</h3>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.38%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.30.02%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+    </div>
+    <p style="text-align: center; margin-top: 10px;">Ticket resale system and manager control panel</p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.15%E2%80%AFPM.png" alt="Swap Interface" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Ticket Swap Interface</strong></p>
+<div style="width: 90%; background: #f8f9fa; border-radius: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px;">
+    <h3 style="text-align: center; margin-bottom: 15px;">Theme Support</h3>
+    <div style="display: flex; gap: 20px; justify-content: center;">
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.32.12%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+        <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.32.12%E2%80%AFPM.png" width="48%" style="border-radius: 8px;" />
+    </div>
+    <p style="text-align: center; margin-top: 10px;"></p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.27.38%E2%80%AFPM.png?raw=true" alt="Resale Section" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Ticket Resale Section</strong></p>
 </div>
 
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.30.02%E2%80%AFPM.png?raw=true" alt="Manager Controls" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Manager Control Panel</strong></p>
-</div>
-
-<div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.32.12%E2%80%AFPM.png?raw=true" alt="Dark Mode" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <p align="center"><strong>Dark Mode Theme</strong></p>
-</div>
-
-
-</div>
 
 ## 🎯 Features Demonstrated in Screenshots
 
