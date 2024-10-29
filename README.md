@@ -285,7 +285,7 @@ npm start
 </div>
 
 <div style="width: 45%; min-width: 300px; margin-bottom: 20px;">
-    <img src="images/available-tickets.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <img src="[images/available-tickets.png](https://github.com/sajanpoudel/Tihar-Ticket-Sell/blob/main/images/Screenshot%202024-10-29%20at%207.23.44%E2%80%AFPM.png" alt="Available Tickets" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
     <p align="center"><strong>Available Tickets Display</strong></p>
 </div>
 
