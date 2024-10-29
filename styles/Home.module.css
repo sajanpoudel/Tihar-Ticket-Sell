@@ -1,0 +1,677 @@
+/* Theme variables */
+.container {
+  --primary: #FF6B6B;  /* Festive Red */
+  --primary-dark: #FF4757;
+  --secondary: #FFC107; /* Marigold Yellow */
+  --success: #2ECC71;
+  --warning: #F1C40F;
+  --danger: #E74C3C;
+  --dark: #2C3E50;
+  --light: #F8F9FA;
+  --white: #FFFFFF;
+  --gray: #95A5A6;
+  --festival-gradient: linear-gradient(135deg, #FF6B6B 0%, #FFC107 100%);
+  --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --diya-glow: 0 0 20px rgba(255, 193, 7, 0.3);
+  --festival-color-1: #FF9933; /* Saffron */
+  --festival-color-2: #138808; /* Green */
+  --festival-color-3: #FF6B6B; /* Red */
+  --festival-glow: 0 0 20px rgba(255, 193, 7, 0.4);
+  
+  padding: 2rem;
+  background: var(--light);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+/* Dark mode styles */
+.containerDark {
+  --light: #1A202C;
+  --dark: #F8F9FA;
+  --white: #2D3748;
+  --gray: #A0AEC0;
+  --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  background: var(--light);
+  color: white;
+}
+
+.containerDark .card {
+  color: white;
+}
+
+.containerDark .ticketCard {
+  background: #2D3748;
+  color: white;
+}
+
+.containerDark .managementInput,
+.containerDark .searchInput,
+.containerDark .daySelect {
+  background: #2D3748;
+  color: white;
+  border-color: #4A5568;
+}
+
+.containerDark .managementInput::placeholder,
+.containerDark .searchInput::placeholder {
+  color: #A0AEC0;
+}
+
+.containerDark .ticketInfo h3,
+.containerDark .ticketInfo p,
+.containerDark .card h2,
+.containerDark .managementControl h3 {
+  color: white;
+}
+
+.containerDark .managementControl {
+  background: #2D3748;
+}
+
+.containerDark .ticketPrice {
+  color: #68D391;
+}
+
+.containerDark .dayFilter {
+  background: #2D3748;
+  color: white;
+}
+
+.containerDark .eventLog {
+  background: #2D3748;
+  color: white;
+}
+
+.containerDark .validationResult {
+  background: #2D3748;
+  color: white;
+}
+
+.containerDark .ticketDay {
+  background: #4A5568;
+  color: white;
+}
+
+.containerDark .noTicket {
+  background: #2D3748;
+  color: #FC8181;
+}
+
+.containerDark .statCard {
+  background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
+}
+
+/* Animations */
+@keyframes flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.95); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes borderGlow {
+  0%, 100% { border-color: var(--primary); }
+  50% { border-color: var(--secondary); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Festival Elements */
+.candleContainer {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.candle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(#FFC107, #FF6B6B);
+  border-radius: 50%;
+  box-shadow: 0 0 20px #FFC107, 0 0 40px #FF6B6B, 0 0 60px #FF4757;
+  animation: flicker 3s infinite ease-in-out;
+}
+
+.festivalLights {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.light {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--secondary);
+  animation: twinkle var(--duration, 2s) infinite ease-in-out;
+  opacity: 0.6;
+}
+
+/* Main Layout */
+.main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.title {
+  font-size: 4rem;
+  background: var(--festival-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-weight: 800;
+  text-shadow: var(--diya-glow);
+  position: relative;
+}
+
+/* Cards and Tickets */
+.card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 153, 51, 0.1),
+    rgba(19, 136, 8, 0.1),
+    rgba(255, 107, 107, 0.1)
+  );
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.ticketCard {
+  background: var(--white);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Buttons and Controls */
+.buyButton {
+  background: var(--festival-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.themeToggle {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--festival-gradient);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+/* Enhanced Input Fields */
+.input, .select, .searchInput {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--light);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--white);
+  color: var(--dark);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+}
+
+.input:focus, .select:focus, .searchInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+/* Connected Account Card */
+.accountCard {
+  background: var(--festival-gradient);
+  padding: 1.5rem 2rem;
+  border-radius: 15px;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  box-shadow: var(--card-shadow);
+}
+
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.accountAddress {
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accountAddress::before {
+  content: '🎭';
+  font-size: 1.5rem;
+}
+
+.ownedTicket {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+}
+
+/* Enhanced Select Box */
+.daySelect {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 3rem;
+  cursor: pointer;
+  width: auto;
+  min-width: 200px;
+}
+
+.daySelect:hover {
+  border-color: var(--primary);
+}
+
+/* Search Box Container */
+.searchBox {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.searchButton {
+  background: var(--festival-gradient);
+  color: var(--white);
+  border: none;
+  padding: 0 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--diya-glow);
+}
+
+/* Management Controls */
+.managementSection {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(255, 193, 7, 0.05));
+  border-radius: 20px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.managementControl {
+  background: var(--white);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.managementControl:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--diya-glow), var(--card-shadow);
+}
+
+.managementControl h3 {
+  color: var(--dark);
+  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.managementControl h3::before {
+  content: '🎫';
+  font-size: 1.3rem;
+}
+
+/* Enhanced Input Fields */
+.managementInput {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--light);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--white);
+  color: var(--dark);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.managementInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.managementInput::placeholder {
+  color: var(--gray);
+}
+
+/* Enhanced Action Buttons */
+.actionButton {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--festival-gradient);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--diya-glow);
+}
+
+.actionButton:disabled {
+  background: var(--gray);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Enhanced Select Box */
+.daySelect {
+  width: 200px;
+  padding: 1rem 1.5rem;
+  border: 2px solid var(--light);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: var(--white);
+  color: var(--dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2em;
+  padding-right: 3rem;
+  box-shadow: var(--card-shadow);
+}
+
+.daySelect:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.daySelect:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+/* Day Filter Container */
+.dayFilter {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  box-shadow: var(--card-shadow);
+}
+
+.dayFilter::before {
+  content: '📅';
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+/* Stats Cards */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.statCard {
+  background: var(--festival-gradient);
+  padding: 1.5rem;
+  border-radius: 15px;
+  text-align: center;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .searchBox {
+    flex-direction: column;
+  }
+  
+  .searchButton {
+    width: 100%;
+  }
+  
+  .managementSection {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Add your other styles here */
+
+/* Account Section Styles */
+.accountSection {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.accountCard {
+  background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+  overflow: hidden;
+}
+
+.accountCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #FFC107, #FF6B6B);
+}
+
+.accountInfo {
+  flex: 1;
+}
+
+.accountAddress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.accountIcon {
+  font-size: 1.5rem;
+}
+
+.ownedTicketCard {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ticketHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ticketIcon {
+  font-size: 1.3rem;
+}
+
+.ticketDetails {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ticketId {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #FFC107;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ticketDay {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dayIcon {
+  font-size: 1.2rem;
+}
+
+.disconnectButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.disconnectButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Add shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.accountCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 3s infinite;
+}

@@ -1,0 +1,8 @@
+{
+  "contractAddress": "0x408c5313592161d69Ae7acbca2A9b744FB6aBB9a",
+  "numTickets": 100,
+  "ticketPrice": "1000000000000000",
+  "deployedAt": "2024-10-29T22:31:49.475Z",
+  "network": "sepolia",
+  "managerAddress": "0x60776F9B7B8F8060Bc24c1F29D46FC532a71b343"
+}

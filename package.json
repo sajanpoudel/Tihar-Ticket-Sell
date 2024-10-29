@@ -1,0 +1,33 @@
+{
+  "name": "ticket-sale-contract",
+  "version": "1.0.0",
+  "description": "Ticket Sale Smart Contract Project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@openzeppelin/contracts": "^5.1.0",
+    "chai": "^4.5.0",
+    "dotenv": "^16.4.5",
+    "ethereum-waffle": "^4.0.10",
+    "ethers": "^5.7.2",
+    "fs-extra": "^11.2.0",
+    "ganache": "^7.9.2",
+    "hardhat": "^2.22.15",
+    "solc": "^0.8.28"
+  },
+  "dependencies": {
+    "next": "^15.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "web3": "^4.14.0",
+    "web3modal": "^1.9.12"
+  }
+}
