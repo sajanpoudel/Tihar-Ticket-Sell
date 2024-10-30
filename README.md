@@ -1,4 +1,4 @@
-# Tihar Festival Ticket Sale Platform
+# Tihar Festival Ticket Sale Platform - Festival of Joy
 
 A decentralized ticket sale platform built on Ethereum (Sepolia testnet) that enables secure ticket purchasing, swapping, and reselling with automated service fee handling. The platform features a beautiful Tihar Festival-themed UI with dark/light mode support.
 
