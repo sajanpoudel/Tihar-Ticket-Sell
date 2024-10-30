@@ -5,7 +5,7 @@ A decentralized ticket sale platform built on Ethereum (Sepolia testnet) that en
 
 ## 📁 Project Structure
 ```
-ticket-sale-platform/
+Tihar-Ticket-Sell/
 ├── contracts/
 │   └── TicketSale.sol         # Smart contract
 ├── pages/
@@ -95,7 +95,7 @@ ticket-sale-platform/
 1. **Clone the repository:**
 ```bash
 git clone <repository-url>
-cd ticket-sale-platform
+cd Tihar-Ticket-Sell
 ```
 
 2. **Install dependencies:**
