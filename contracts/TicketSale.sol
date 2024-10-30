@@ -40,6 +40,7 @@ contract TicketSale {
         require(ticketId > 0 && ticketId <= totalTickets, "Invalid ticket ID");
         require(ticketOwners[ticketId] == address(0), "Ticket already sold");
         require(msg.value == ticketPrice, "Incorrect payment amount");
+        require(ticketsOwned[msg.sender] == 0, "Already owns a ticket");
 
         ticketOwners[ticketId] = msg.sender;
         ticketsOwned[msg.sender] = ticketId;
