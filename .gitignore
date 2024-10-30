@@ -26,3 +26,7 @@ yarn-error.log*
 # Build directories
 build/
 dist/
+# Next.js and Hardhat build output
+.next/
+artifacts/
+cache/
