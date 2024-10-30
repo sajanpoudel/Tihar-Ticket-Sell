@@ -472,7 +472,7 @@ export default function Home() {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Add this component
+  // Adding the component for festival theme
   const FestivalLights = () => {
     useEffect(() => {
       const createLights = () => {
