@@ -269,3 +269,24 @@ describe('TicketSale Contract', () => {
     }
   });
 });
+const expectRevert = async (promise) => {
+  try {
+    await promise;
+  } catch (err) {
+    return;
+  }
+  assert.fail('Expected the transaction to revert');
+};
+
+describe('TicketSale ownership rules', () => {
+  it('prevents one account from buying a second ticket', async () => {
+    await ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+
+    await expectRevert(
+      ticketSale.methods.buyTicket(2).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' })
+    );
+
+    assert.equal(await ticketSale.methods.getTicketOf(accounts[1]).call(), '1');
+    assert.equal(await ticketSale.methods.ticketOwners(2).call(), '0x0000000000000000000000000000000000000000');
+  });
+});
