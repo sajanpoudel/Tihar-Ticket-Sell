@@ -83,9 +83,9 @@ contract TicketSale {
     function acceptSwap(uint ticketId) public {
         uint myTicketId = ticketsOwned[msg.sender];
         require(myTicketId != 0, "You don't own a ticket");
-        require(swapOffers[myTicketId] == ticketOwners[ticketId], "No valid swap offer");
-        
         address otherOwner = ticketOwners[ticketId];
+        require(otherOwner != address(0), "Ticket not owned by anyone");
+        require(swapOffers[myTicketId] == otherOwner, "No valid swap offer");
         
         ticketOwners[myTicketId] = otherOwner;
         ticketOwners[ticketId] = msg.sender;
