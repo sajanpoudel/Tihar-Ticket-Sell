@@ -290,3 +290,15 @@ describe('TicketSale ownership rules', () => {
     assert.equal(await ticketSale.methods.ticketOwners(2).call(), '0x0000000000000000000000000000000000000000');
   });
 });
+
+describe('TicketSale swap checks', () => {
+  it('rejects accepting a swap with a ticket nobody owns', async () => {
+    await ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+
+    await expectRevert(
+      ticketSale.methods.acceptSwap(5).send({ from: accounts[1], gas: '3000000' })
+    );
+
+    assert.equal(await ticketSale.methods.ticketOwners(1).call(), accounts[1]);
+  });
+});
