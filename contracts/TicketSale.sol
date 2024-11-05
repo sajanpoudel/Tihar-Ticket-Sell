@@ -117,6 +117,12 @@ contract TicketSale {
         uint serviceFee = price * 10 / 100;
         uint sellerAmount = price - serviceFee;
         
+        // Update the state before sending any ETH so a receiving contract cannot re-enter
+        ticketOwners[ticketId] = msg.sender;
+        ticketsOwned[msg.sender] = ticketId;
+        delete ticketsOwned[previousOwner];
+        delete ticketsForResale[ticketId];
+        
         // Transfer service fee to manager
         (bool feeTransfer, ) = payable(manager).call{value: serviceFee}("");
         require(feeTransfer, "Failed to transfer service fee");
@@ -124,11 +130,6 @@ contract TicketSale {
         // Transfer remaining amount to seller
         (bool sellerTransfer, ) = payable(previousOwner).call{value: sellerAmount}("");
         require(sellerTransfer, "Failed to transfer payment to seller");
-        
-        ticketOwners[ticketId] = msg.sender;
-        ticketsOwned[msg.sender] = ticketId;
-        delete ticketsOwned[previousOwner];
-        delete ticketsForResale[ticketId];
         
         emit TicketResold(ticketId, previousOwner, msg.sender, price);
     }
