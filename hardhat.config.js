@@ -21,7 +21,7 @@ module.exports = {
     },
     sepolia: {
       url: process.env.INFURA_URL,
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
       gasLimit: 8000000,
       gas: 8000000,
