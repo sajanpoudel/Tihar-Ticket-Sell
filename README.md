@@ -412,3 +412,14 @@ npm start
    - Recent activities
    - Transaction details
    - Status tracking
+
+## Running the contract tests
+
+The tests compile `contracts/TicketSale.sol` with `solc` and run it on an in memory Ganache chain, so no wallet or network is needed.
+
+```
+npm install
+npm test
+```
+
+They cover buying, swapping, resale with the 10 percent service fee, and the rules that a wallet can hold only one ticket and that a swap needs a ticket with an owner.
