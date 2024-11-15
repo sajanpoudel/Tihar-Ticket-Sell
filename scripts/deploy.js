@@ -1,57 +1,45 @@
 require('dotenv').config();
 const { ethers } = require('hardhat');
+const hre = require("hardhat");
+const fs = require('fs-extra');
+const path = require('path');
 
 async function main() {
-  const [deployer] = await ethers.getSigners();
-  console.log('Deploying contracts with account:', deployer.address);
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying contracts with account:", deployer.address);
 
-  const TicketSale = await ethers.getContractFactory('TicketSale');
-  
-  // Set ticket price to 0.001 ETH
-  const ticketPrice = ethers.utils.parseEther('0.001');
+  const ticketPrice = hre.ethers.utils.parseEther("0.001"); // 0.001 ETH
   const numTickets = 100;
-  
+
   const deploymentOptions = {
-    gasLimit: 8000000,
-    gasPrice: (await ethers.provider.getGasPrice()).mul(2)
-  };
-  
-  console.log('Deploying with options:', {
     numTickets,
-    ticketPrice: ethers.utils.formatEther(ticketPrice), // Should show 0.001
-    gasLimit: deploymentOptions.gasLimit,
-    gasPrice: deploymentOptions.gasPrice.toString()
-  });
+    ticketPrice: hre.ethers.utils.formatEther(ticketPrice),
+    gasLimit: 8000000,
+    gasPrice: await hre.ethers.provider.getGasPrice()
+  };
 
-  const ticketSale = await TicketSale.deploy(
-    numTickets, 
-    ticketPrice,
-    {
-      gasLimit: deploymentOptions.gasLimit,
-      gasPrice: deploymentOptions.gasPrice
-    }
-  );
+  console.log("Deploying with options:", deploymentOptions);
 
+  const TicketSale = await hre.ethers.getContractFactory("TicketSale");
+  const ticketSale = await TicketSale.deploy(numTickets, ticketPrice);
   await ticketSale.deployed();
 
-  console.log('TicketSale deployed to:', ticketSale.address);
+  console.log("TicketSale deployed to:", ticketSale.address);
 
-  // Save the contract address and initial setup
-  const fs = require('fs');
-  const config = {
-    contractAddress: ticketSale.address,
-    numTickets: numTickets,
-    ticketPrice: ticketPrice.toString(),
-    deployedAt: new Date().toISOString(),
-    network: 'sepolia'
-  };
-  fs.writeFileSync('./config.json', JSON.stringify(config, null, 2));
+  // Update config.json with new contract address
+  const configPath = path.join(__dirname, '../config.json');
+  const config = await fs.readJson(configPath);
+  
+  config.contractAddress = ticketSale.address;
+  config.deployedAt = new Date().toISOString();
+  config.managerAddress = deployer.address;
+  
+  await fs.writeJson(configPath, config, { spaces: 2 });
 
-  // Verify deployment
-  console.log('Contract deployed with:');
-  console.log('- Number of tickets:', numTickets);
-  console.log('- Ticket price:', ethers.utils.formatEther(ticketPrice), 'ETH');
-  console.log('- Manager address:', deployer.address);
+  console.log("Contract deployed with:");
+  console.log("- Number of tickets:", numTickets);
+  console.log("- Ticket price:", hre.ethers.utils.formatEther(ticketPrice), "ETH");
+  console.log("- Manager address:", deployer.address);
 }
 
 main()

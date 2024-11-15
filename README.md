@@ -158,38 +158,95 @@ Contract deployed with:
 
 ```
 
-6. **Test the contract:**
+## 🧪 Testing with Ganache
+
+The project uses Ganache for local blockchain testing. Here's how to run the tests:
+
+1. **Install Dependencies:**
 ```bash
 npx hardhat test
 
 
-
-  TicketSale Contract
-    Deployment
-      ✔ Should set the right owner
-      ✔ Should set the correct ticket price
-      ✔ Should set the correct number of tickets
-    Ticket Purchase
-      ✔ Should allow buying a ticket
-      ✔ Should not allow buying with incorrect price
-      ✔ Should not allow buying same ticket twice
-      ✔ Should not allow buying multiple tickets
-    Ticket Swapping
-      ✔ Should allow offering a swap
-      ✔ Should allow accepting a swap
-      ✔ Should not allow swap without ownership
-    Ticket Resale
-      ✔ Should allow listing ticket for resale
-      ✔ Should allow buying resale ticket
-      ✔ Should transfer service fee to manager
-    Manager Functions
-      ✔ Should allow manager to update ticket price
-      ✔ Should allow manager to add tickets
-      ✔ Should not allow non-manager to update price
-
-
-  16 passing (1s)
+2. **Test File Structure:**
 ```
+test/
+└── ganache.js    # Main test file using Ganache
+```
+
+3. **Test Cases:**
+The test suite (`test/ganache.js`) includes:
+- Contract deployment verification
+- Ticket purchase functionality
+- Ticket swap mechanism
+- Resale functionality
+- Payment transfer verification
+- Service fee handling
+
+4. **Run Tests:**
+```bash
+node scripts/compile.js
+npm test
+```
+
+Example output:
+```bash
+  
+  TicketSale Contract
+    ✔ deploys a contract
+Buyer initial balance: 1000000000000000000000
+    ✔ allows one account to buy a ticket
+    ✔ prevents buying same ticket twice
+    ✔ allows ticket swap between two users
+    ✔ allows resale of tickets
+Owner balance change: 0.1 ETH
+Buyer balance change: 0.10021951218866495 ETH
+    ✔ transfers payment to owner when ticket is purchased
+Owner received (service fee): 0.015 ETH
+Seller received: 0.135 ETH
+Actual seller balance change: 0.135 ETH
+Listing gas cost: 0.000094512 ETH
+Buyer paid: 0.150189007503689088 ETH
+    ✔ transfers payment correctly during resale with service fee
+
+
+  7 passing (191ms)
+```
+
+5. **Key Test Features:**
+- Uses Ganache's in-memory blockchain
+- Preconfigured test accounts with 1000 ETH each
+- Automated gas limit settings
+- Balance tracking for payment verification
+- Service fee calculations
+- Transaction cost monitoring
+
+6. **Test Environment Configuration:**
+```javascript
+const provider = ganache.provider({
+  accounts: [
+    { balance: '1000000000000000000000' },  // Account 0 (deployer)
+    { balance: '1000000000000000000000' },  // Account 1 (buyer)
+    { balance: '1000000000000000000000' },  // Account 2 (another buyer)
+    { balance: '1000000000000000000000' }   // Account 3 (extra account)
+  ],
+  gasLimit: 8000000
+});
+```
+
+7. **Verification Points:**
+- Contract deployment success
+- Ticket ownership transfers
+- Payment transfers to owner
+- Service fee calculations
+- Balance changes for all parties
+- Gas cost tracking
+- Error handling
+
+8. **Troubleshooting Tests:**
+- If tests fail with "out of gas" error, increase the gasLimit
+- For balance assertion failures, check the gas cost calculations
+- For transaction failures, verify the contract state before each operation
+
 
 6. **Update Configuration:**
 
@@ -283,12 +340,6 @@ npm run dev
    - Connect wallet
    - Request test ETH
 
-## 🧪 Testing
-
-Run the test suite:
-```bash
-npx hardhat test
-```
 
 ## 📱 Deployment
 

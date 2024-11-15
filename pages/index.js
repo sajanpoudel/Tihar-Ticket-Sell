@@ -3,8 +3,9 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import TicketSale from '../artifacts/contracts/TicketSale.sol/TicketSale.json';
 import styles from '../styles/Home.module.css';
+import config from '../config.json';
 
-const contractAddress = "0x408c5313592161d69Ae7acbca2A9b744FB6aBB9a";
+const contractAddress = "0x4e46d599dc876111c3D5eF24e6053565BF22F70b";
 
 export default function Home() {
   const [account, setAccount] = useState('');
@@ -36,9 +37,18 @@ export default function Home() {
   const [validationMessage, setValidationMessage] = useState('');
   const [ticketDetails, setTicketDetails] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    initWeb3();
+    const init = async () => {
+      try {
+        await initWeb3();
+      } catch (error) {
+        console.error("Initialization error:", error);
+        setError("Failed to initialize Web3. Please make sure you're connected to the correct network.");
+      }
+    };
+    init();
   }, []);
 
   useEffect(() => {
@@ -95,6 +105,10 @@ export default function Home() {
 
   async function initWeb3() {
     try {
+      if (typeof window.ethereum === 'undefined') {
+        throw new Error('Please install MetaMask to use this application');
+      }
+
       const web3Modal = new Web3Modal({
         network: "sepolia",
         cacheProvider: true,
@@ -104,21 +118,57 @@ export default function Home() {
       const provider = new ethers.providers.Web3Provider(connection);
       const signer = provider.getSigner();
       const address = await signer.getAddress();
-      
-      const contract = new ethers.Contract(
-        contractAddress,
-        TicketSale.abi,
-        signer
-      );
 
-      setAccount(address);
-      setProvider(provider);
-      setContract(contract);
-      
-      await loadAvailableTickets();
-      await loadResaleTickets();
+      // Verify contract address
+      if (!contractAddress) {
+        throw new Error('Contract address not configured');
+      }
+
+      // Initialize contract with proper error handling
+      try {
+        const contract = new ethers.Contract(
+          contractAddress,
+          TicketSale.abi,
+          signer
+        );
+
+        // Verify contract is deployed by calling a view function
+        await contract.totalTickets();
+
+        setContract(contract);
+        setAccount(address);
+        setProvider(provider);
+
+        // Load initial data
+        await loadAvailableTickets();
+        await loadResaleTickets();
+        await loadTicketPrice();
+        
+        // Check if user is manager
+        if (contract && address) {
+          const managerAddress = await contract.manager();
+          setIsManager(managerAddress.toLowerCase() === address.toLowerCase());
+        }
+
+      } catch (error) {
+        console.error("Contract initialization error:", error);
+        throw new Error('Failed to connect to the contract. Please check if you are on the Sepolia network.');
+      }
+
+      // Listen for network changes
+      provider.provider.on("chainChanged", () => {
+        window.location.reload();
+      });
+
+      // Listen for account changes
+      provider.provider.on("accountsChanged", () => {
+        window.location.reload();
+      });
+
     } catch (error) {
-      console.error("Error initializing web3:", error);
+      console.error("Web3 initialization error:", error);
+      setError(error.message);
+      throw error;
     }
   }
 
@@ -147,10 +197,13 @@ export default function Home() {
         const ownedTicketId = await contract.getTicketOf(account);
         if (ownedTicketId.toString() !== '0') {
           setOwnedTicket(ownedTicketId.toString());
+        } else {
+          setOwnedTicket(null);
         }
       }
     } catch (error) {
       console.error("Error loading available tickets:", error);
+      setError("Failed to load available tickets");
     }
     setLoading(false);
   }
@@ -189,23 +242,73 @@ export default function Home() {
   }
 
   async function buyTicket(ticketId) {
-    if (!contract) return;
+    if (!contract) {
+      setError("Please connect your wallet first");
+      return;
+    }
+    
     setLoading(true);
     try {
+      // Check if user is manager
+      const isManagerAccount = await contract.isManager(account);
+      
+      // Only check for existing ticket if not manager
+      if (!isManagerAccount) {
+        const userTicket = await contract.getTicketOf(account);
+        if (userTicket.toString() !== '0') {
+          setError("You already own ticket #" + userTicket.toString());
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Get the ticket price
       const price = await contract.ticketPrice();
+      console.log('Ticket price:', ethers.utils.formatEther(price), 'ETH');
+      
+      // Check user's balance
+      const balance = await provider.getBalance(account);
+      if (balance.lt(price)) {
+        setError("Insufficient balance to buy ticket");
+        setLoading(false);
+        return;
+      }
+
+      // Send transaction with manual gas limit
       const tx = await contract.buyTicket(ticketId, {
         value: price,
         gasLimit: 300000
       });
-      await tx.wait();
-      await loadAvailableTickets();
-      await loadOwnedTicket();
-      alert("Ticket purchased successfully!");
+
+      console.log('Transaction sent:', tx.hash);
+      
+      // Wait for transaction confirmation
+      const receipt = await tx.wait();
+      console.log('Transaction confirmed:', receipt);
+
+      if (receipt.status === 1) {
+        // Transaction successful
+        await loadAvailableTickets();
+        await loadOwnedTicket();
+        alert("Ticket purchased successfully!");
+      } else {
+        throw new Error("Transaction failed");
+      }
     } catch (error) {
       console.error("Error buying ticket:", error);
-      alert("Error: " + error.message);
+      
+      if (error.message.includes("Already owns a ticket")) {
+        setError("You already own a ticket");
+      } else if (error.code === 'INSUFFICIENT_FUNDS') {
+        setError("Insufficient funds to cover gas fees");
+      } else if (error.message.includes("Ticket already sold")) {
+        setError("This ticket has already been sold");
+      } else {
+        setError("Failed to buy ticket. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function offerSwap() {
@@ -272,11 +375,14 @@ export default function Home() {
   }
 
   async function checkIfManager() {
+    if (!contract || !account) return;
+    
     try {
-      const manager = await contract.manager();
-      setIsManager(manager.toLowerCase() === account.toLowerCase());
+      const managerAddress = await contract.manager();
+      setIsManager(managerAddress.toLowerCase() === account.toLowerCase());
     } catch (error) {
-      console.error("Error checking manager:", error);
+      console.error("Error checking manager status:", error);
+      setError("Failed to check manager status. Please try reconnecting your wallet.");
     }
   }
 
@@ -382,6 +488,8 @@ export default function Home() {
   }
 
   const filteredTickets = tickets.filter(ticket => {
+    if (ticket.owner !== ethers.constants.AddressZero) return false;
+    
     if (selectedDay === 'All') return true;
     const id = parseInt(ticket.id);
     return id >= ticketDays[selectedDay].start && id <= ticketDays[selectedDay].end;
@@ -498,8 +606,36 @@ export default function Home() {
     return null;
   };
 
+  // Add this to your existing error handling
+  const handleContractError = (error) => {
+    if (error.code === 'CALL_EXCEPTION') {
+      setError('Unable to connect to the contract. Please make sure you are connected to the correct network.');
+    } else {
+      setError(error.message);
+    }
+  };
+
+  // Add this component for error display
+  const ErrorMessage = ({ message, onDismiss }) => {
+    if (!message) return null;
+    
+    return (
+      <div className={styles.errorOverlay}>
+        <div className={styles.errorContent}>
+          <p>{message}</p>
+          <button onClick={onDismiss}>Dismiss</button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={`${styles.container} ${isDarkMode ? styles.containerDark : ''}`}>
+      <ErrorMessage 
+        message={error} 
+        onDismiss={() => setError('')} 
+      />
+      
       <FestivalLights />
       <main className={styles.main}>
         <h1 className={styles.title}>Tihar Festival Ticket Platform</h1>
@@ -703,30 +839,35 @@ export default function Home() {
               <div className={styles.loader}>Loading...</div>
             ) : (
               <div className={styles.ticketList}>
-                {filteredTickets.map((ticket) => (
-                  <div key={ticket.id} className={styles.ticketCard}>
-                    <div className={styles.ticketInfo}>
-                      <h3>Ticket #{ticket.id}</h3>
-                      <p className={styles.ticketDay}>
-                        {parseInt(ticket.id) <= 10000 ? 'Monday' :
-                         parseInt(ticket.id) <= 20000 ? 'Tuesday' :
-                         parseInt(ticket.id) <= 30000 ? 'Wednesday' :
-                         parseInt(ticket.id) <= 40000 ? 'Thursday' :
-                         parseInt(ticket.id) <= 50000 ? 'Friday' : 'Weekend'}
-                      </p>
-                      <p className={styles.ticketPrice}>
-                        Price: {ethers.utils.formatEther(ticketPrice)} ETH
-                      </p>
+                {filteredTickets.length > 0 ? (
+                  filteredTickets.map((ticket) => (
+                    <div key={ticket.id} className={styles.ticketCard}>
+                      <div className={styles.ticketInfo}>
+                        <h3>Ticket #{ticket.id}</h3>
+                        <p className={styles.ticketDay}>
+                          {getTicketDay(ticket.id)}
+                        </p>
+                        <p className={styles.ticketPrice}>
+                          Price: {ethers.utils.formatEther(ticketPrice)} ETH
+                        </p>
+                      </div>
+                      <button 
+                        className={styles.buyButton}
+                        onClick={() => buyTicket(ticket.id)}
+                        disabled={loading || (!isManager && ownedTicket !== null)}
+                        title={!isManager && ownedTicket ? `You already own ticket #${ownedTicket}` : ''}
+                      >
+                        {loading ? 'Processing...' : 
+                         (!isManager && ownedTicket) ? 'Already Own Ticket' : 
+                         'Buy Ticket'}
+                      </button>
                     </div>
-                    <button 
-                      className={styles.buyButton}
-                      onClick={() => buyTicket(ticket.id)}
-                      disabled={loading}
-                    >
-                      {loading ? 'Processing...' : 'Buy Ticket'}
-                    </button>
+                  ))
+                ) : (
+                  <div className={styles.noTickets}>
+                    <p>No available tickets for {selectedDay === 'All' ? 'any day' : selectedDay}</p>
                   </div>
-                ))}
+                )}
               </div>
             )}
           </div>

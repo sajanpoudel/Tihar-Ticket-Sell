@@ -35,13 +35,27 @@ contract TicketSale {
     function buyTicket(uint ticketId) public payable {
         require(ticketId > 0 && ticketId <= totalTickets, "Invalid ticket ID");
         require(ticketOwners[ticketId] == address(0), "Ticket already sold");
-        require(ticketsOwned[msg.sender] == 0, "Already owns a ticket");
+        require(ticketsOwned[msg.sender] == 0 || msg.sender == manager, "Already owns a ticket");
         require(msg.value == ticketPrice, "Incorrect payment amount");
 
+        // Update state before transfer to prevent reentrancy
         ticketOwners[ticketId] = msg.sender;
         ticketsOwned[msg.sender] = ticketId;
         
+        // Transfer payment to manager using call
+        (bool success, ) = payable(manager).call{value: msg.value}("");
+        require(success, "Failed to transfer payment to manager");
+        
         emit TicketPurchased(ticketId, msg.sender);
+    }
+
+    // Make the contract able to receive ETH
+    receive() external payable {}
+    fallback() external payable {}
+
+    // Add a function to check manager's balance
+    function getManagerBalance() public view returns (uint) {
+        return manager.balance;
     }
 
     function getTicketOf(address person) public view returns (uint) {
@@ -95,8 +109,13 @@ contract TicketSale {
         uint serviceFee = price * 10 / 100;
         uint sellerAmount = price - serviceFee;
         
-        payable(previousOwner).transfer(sellerAmount);
-        payable(manager).transfer(serviceFee);
+        // Transfer service fee to manager
+        (bool feeTransfer, ) = payable(manager).call{value: serviceFee}("");
+        require(feeTransfer, "Failed to transfer service fee");
+        
+        // Transfer remaining amount to seller
+        (bool sellerTransfer, ) = payable(previousOwner).call{value: sellerAmount}("");
+        require(sellerTransfer, "Failed to transfer payment to seller");
         
         ticketOwners[ticketId] = msg.sender;
         ticketsOwned[msg.sender] = ticketId;
@@ -193,6 +212,11 @@ contract TicketSale {
 
     function getTicketPriceInEther() public view returns (uint) {
         return ticketPrice;
+    }
+
+    // Add this function to check if an address is the manager
+    function isManager(address account) public view returns (bool) {
+        return account == manager;
     }
 }
 
