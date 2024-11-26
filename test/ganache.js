@@ -302,3 +302,11 @@ describe('TicketSale swap checks', () => {
     assert.equal(await ticketSale.methods.ticketOwners(1).call(), accounts[1]);
   });
 });
+
+describe('TicketSale deployment', () => {
+  it('stores the manager, price and ticket count', async () => {
+    assert.equal(await ticketSale.methods.manager().call(), accounts[0]);
+    assert.equal(await ticketSale.methods.ticketPrice().call(), TICKET_PRICE);
+    assert.equal(await ticketSale.methods.totalTickets().call(), '10');
+  });
+});
