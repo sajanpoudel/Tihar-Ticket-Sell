@@ -329,3 +329,30 @@ describe('TicketSale purchase checks', () => {
     await expectRevert(ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: tooMuch, gas: '3000000' }));
   });
 });
+
+describe('TicketSale availability', () => {
+  it('lists every ticket as available at the start', async () => {
+    const available = await ticketSale.methods.getAvailableTickets().call();
+    assert.equal(available.length, 10);
+    assert.equal(await ticketSale.methods.getTotalAvailableTickets().call(), '10');
+  });
+
+  it('removes a sold ticket from the available list', async () => {
+    await ticketSale.methods.buyTicket(3).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+    const available = await ticketSale.methods.getAvailableTickets().call();
+    assert.equal(available.length, 9);
+    assert(!available.includes('3'));
+    assert.equal(await ticketSale.methods.getTotalAvailableTickets().call(), '9');
+  });
+
+  it('reports the owner of a ticket in getTicketDetails', async () => {
+    await ticketSale.methods.buyTicket(2).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+    const details = await ticketSale.methods.getTicketDetails(2).call();
+    assert.equal(details.owner, accounts[1]);
+    assert.equal(details.isForSale, false);
+  });
+
+  it('rejects getTicketDetails for an invalid id', async () => {
+    await expectRevert(ticketSale.methods.getTicketDetails(99).call());
+  });
+});
