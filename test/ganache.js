@@ -310,3 +310,22 @@ describe('TicketSale deployment', () => {
     assert.equal(await ticketSale.methods.totalTickets().call(), '10');
   });
 });
+
+describe('TicketSale purchase checks', () => {
+  it('rejects a ticket id of zero', async () => {
+    await expectRevert(ticketSale.methods.buyTicket(0).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' }));
+  });
+
+  it('rejects a ticket id above the total', async () => {
+    await expectRevert(ticketSale.methods.buyTicket(11).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' }));
+  });
+
+  it('rejects a payment that is too low', async () => {
+    await expectRevert(ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: '1', gas: '3000000' }));
+  });
+
+  it('rejects a payment that is too high', async () => {
+    const tooMuch = web3.utils.toWei('0.2', 'ether');
+    await expectRevert(ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: tooMuch, gas: '3000000' }));
+  });
+});
