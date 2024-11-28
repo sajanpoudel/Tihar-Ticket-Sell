@@ -356,3 +356,40 @@ describe('TicketSale availability', () => {
     await expectRevert(ticketSale.methods.getTicketDetails(99).call());
   });
 });
+
+describe('TicketSale manager functions', () => {
+  it('lets only the manager change the price', async () => {
+    await expectRevert(ticketSale.methods.updateTicketPrice(5).send({ from: accounts[1], gas: '3000000' }));
+    await ticketSale.methods.updateTicketPrice(5).send({ from: accounts[0], gas: '3000000' });
+    assert.equal(await ticketSale.methods.ticketPrice().call(), '5');
+  });
+
+  it('rejects a price of zero', async () => {
+    await expectRevert(ticketSale.methods.updateTicketPrice(0).send({ from: accounts[0], gas: '3000000' }));
+  });
+
+  it('lets only the manager add tickets', async () => {
+    await expectRevert(ticketSale.methods.addTickets(5).send({ from: accounts[1], gas: '3000000' }));
+    await ticketSale.methods.addTickets(5).send({ from: accounts[0], gas: '3000000' });
+    assert.equal(await ticketSale.methods.totalTickets().call(), '15');
+  });
+
+  it('rejects adding zero tickets', async () => {
+    await expectRevert(ticketSale.methods.addTickets(0).send({ from: accounts[0], gas: '3000000' }));
+  });
+
+  it('can sell a ticket that was added later', async () => {
+    await ticketSale.methods.addTickets(1).send({ from: accounts[0], gas: '3000000' });
+    await ticketSale.methods.buyTicket(11).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+    assert.equal(await ticketSale.methods.ticketOwners(11).call(), accounts[1]);
+  });
+
+  it('recognises the manager', async () => {
+    assert.equal(await ticketSale.methods.isManager(accounts[0]).call(), true);
+    assert.equal(await ticketSale.methods.isManager(accounts[1]).call(), false);
+  });
+
+  it('reports the price in wei', async () => {
+    assert.equal(await ticketSale.methods.getTicketPriceInEther().call(), TICKET_PRICE);
+  });
+});
