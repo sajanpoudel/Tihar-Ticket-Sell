@@ -393,3 +393,33 @@ describe('TicketSale manager functions', () => {
     assert.equal(await ticketSale.methods.getTicketPriceInEther().call(), TICKET_PRICE);
   });
 });
+
+describe('TicketSale swap checks', () => {
+  beforeEach(async () => {
+    await ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+    await ticketSale.methods.buyTicket(2).send({ from: accounts[2], value: TICKET_PRICE, gas: '3000000' });
+  });
+
+  it('rejects an offer from someone without a ticket', async () => {
+    await expectRevert(ticketSale.methods.offerSwap(2).send({ from: accounts[3], gas: '3000000' }));
+  });
+
+  it('rejects an offer for an unowned ticket', async () => {
+    await expectRevert(ticketSale.methods.offerSwap(9).send({ from: accounts[1], gas: '3000000' }));
+  });
+
+  it('rejects an offer to swap with yourself', async () => {
+    await expectRevert(ticketSale.methods.offerSwap(1).send({ from: accounts[1], gas: '3000000' }));
+  });
+
+  it('rejects accepting a swap that was never offered', async () => {
+    await expectRevert(ticketSale.methods.acceptSwap(1).send({ from: accounts[2], gas: '3000000' }));
+  });
+
+  it('moves ticketsOwned for both users after a swap', async () => {
+    await ticketSale.methods.offerSwap(2).send({ from: accounts[1], gas: '3000000' });
+    await ticketSale.methods.acceptSwap(1).send({ from: accounts[2], gas: '3000000' });
+    assert.equal(await ticketSale.methods.getTicketOf(accounts[1]).call(), '2');
+    assert.equal(await ticketSale.methods.getTicketOf(accounts[2]).call(), '1');
+  });
+});
