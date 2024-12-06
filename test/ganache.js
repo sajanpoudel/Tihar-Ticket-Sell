@@ -423,3 +423,49 @@ describe('TicketSale swap checks', () => {
     assert.equal(await ticketSale.methods.getTicketOf(accounts[2]).call(), '1');
   });
 });
+
+describe('TicketSale resale checks', () => {
+  beforeEach(async () => {
+    await ticketSale.methods.buyTicket(1).send({ from: accounts[1], value: TICKET_PRICE, gas: '3000000' });
+  });
+
+  it('rejects a resale listing from someone without a ticket', async () => {
+    await expectRevert(ticketSale.methods.resaleTicket(100).send({ from: accounts[3], gas: '3000000' }));
+  });
+
+  it('rejects a resale price of zero', async () => {
+    await expectRevert(ticketSale.methods.resaleTicket(0).send({ from: accounts[1], gas: '3000000' }));
+  });
+
+  it('lists a ticket that is for resale', async () => {
+    await ticketSale.methods.resaleTicket(web3.utils.toWei('0.15', 'ether')).send({ from: accounts[1], gas: '3000000' });
+    assert.deepEqual(await ticketSale.methods.checkResale().call(), ['1']);
+    const details = await ticketSale.methods.getTicketDetails(1).call();
+    assert.equal(details.isForSale, true);
+  });
+
+  it('rejects buying a ticket that is not for resale', async () => {
+    await expectRevert(ticketSale.methods.acceptResale(1).send({ from: accounts[2], value: TICKET_PRICE, gas: '3000000' }));
+  });
+
+  it('rejects a resale payment of the wrong amount', async () => {
+    await ticketSale.methods.resaleTicket(web3.utils.toWei('0.15', 'ether')).send({ from: accounts[1], gas: '3000000' });
+    await expectRevert(ticketSale.methods.acceptResale(1).send({ from: accounts[2], value: TICKET_PRICE, gas: '3000000' }));
+  });
+
+  it('rejects a resale purchase by someone who already owns a ticket', async () => {
+    await ticketSale.methods.buyTicket(2).send({ from: accounts[2], value: TICKET_PRICE, gas: '3000000' });
+    const price = web3.utils.toWei('0.15', 'ether');
+    await ticketSale.methods.resaleTicket(price).send({ from: accounts[1], gas: '3000000' });
+    await expectRevert(ticketSale.methods.acceptResale(1).send({ from: accounts[2], value: price, gas: '3000000' }));
+  });
+
+  it('clears the listing after the resale', async () => {
+    const price = web3.utils.toWei('0.15', 'ether');
+    await ticketSale.methods.resaleTicket(price).send({ from: accounts[1], gas: '3000000' });
+    await ticketSale.methods.acceptResale(1).send({ from: accounts[2], value: price, gas: '3000000' });
+    assert.deepEqual(await ticketSale.methods.checkResale().call(), []);
+    assert.equal(await ticketSale.methods.getTicketOf(accounts[1]).call(), '0');
+    assert.equal(await ticketSale.methods.getTicketOf(accounts[2]).call(), '1');
+  });
+});
