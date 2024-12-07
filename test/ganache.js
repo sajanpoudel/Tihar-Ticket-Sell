@@ -469,3 +469,17 @@ describe('TicketSale resale checks', () => {
     assert.equal(await ticketSale.methods.getTicketOf(accounts[2]).call(), '1');
   });
 });
+
+describe('TicketSale constructor', () => {
+  it('rejects zero tickets', async () => {
+    await expectRevert(
+      new web3.eth.Contract(JSON.parse(interface)).deploy({ data: bytecode, arguments: [0, TICKET_PRICE] }).send({ from: accounts[0], gas: '6000000' })
+    );
+  });
+
+  it('rejects a price of zero', async () => {
+    await expectRevert(
+      new web3.eth.Contract(JSON.parse(interface)).deploy({ data: bytecode, arguments: [10, 0] }).send({ from: accounts[0], gas: '6000000' })
+    );
+  });
+});
