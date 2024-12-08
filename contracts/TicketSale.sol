@@ -7,10 +7,14 @@ contract TicketSale {
     uint public ticketPrice;
     uint public totalTickets;
     
+ 
+
+    
     mapping(uint => address) public ticketOwners;
     mapping(address => uint) public ticketsOwned;
     mapping(uint => uint) public ticketsForResale;
     mapping(uint => address) public swapOffers;
+    
 
     // Events for tracking
     event TicketPurchased(uint ticketId, address buyer);
@@ -35,10 +39,8 @@ contract TicketSale {
     function buyTicket(uint ticketId) public payable {
         require(ticketId > 0 && ticketId <= totalTickets, "Invalid ticket ID");
         require(ticketOwners[ticketId] == address(0), "Ticket already sold");
-        require(ticketsOwned[msg.sender] == 0 || msg.sender == manager, "Already owns a ticket");
         require(msg.value == ticketPrice, "Incorrect payment amount");
 
-        // Update state before transfer to prevent reentrancy
         ticketOwners[ticketId] = msg.sender;
         ticketsOwned[msg.sender] = ticketId;
         
@@ -62,13 +64,19 @@ contract TicketSale {
         return ticketsOwned[person];
     }
 
-    function offerSwap(uint ticketId) public {
+    function offerSwap(uint targetTicketId) public {
+        require(targetTicketId > 0 && targetTicketId <= totalTickets, "Invalid ticket ID");
         uint myTicketId = ticketsOwned[msg.sender];
         require(myTicketId != 0, "You don't own a ticket");
-        require(ticketOwners[ticketId] != address(0), "Target ticket not owned");
         
-        swapOffers[ticketId] = msg.sender;
-        emit TicketSwapOffered(ticketId, msg.sender);
+        address targetOwner = ticketOwners[targetTicketId];
+        require(targetOwner != address(0), "Target ticket not owned by anyone");
+        require(targetOwner != msg.sender, "Cannot swap with your own ticket");
+        
+        require(ticketsForResale[targetTicketId] == 0, "Target ticket is listed for resale");
+        
+        swapOffers[targetTicketId] = msg.sender;
+        emit TicketSwapOffered(targetTicketId, msg.sender);
     }
 
     function acceptSwap(uint ticketId) public {
@@ -92,10 +100,9 @@ contract TicketSale {
     function resaleTicket(uint price) public {
         uint ticketId = ticketsOwned[msg.sender];
         require(ticketId != 0, "You don't own a ticket");
-        require(price > 0, "Price must be positive");
+        require(price > 0, "Invalid price");
         
         ticketsForResale[ticketId] = price;
-        
         emit TicketResaleListed(ticketId, price);
     }
 

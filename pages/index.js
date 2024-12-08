@@ -5,7 +5,7 @@ import TicketSale from '../artifacts/contracts/TicketSale.sol/TicketSale.json';
 import styles from '../styles/Home.module.css';
 import config from '../config.json';
 
-const contractAddress = "0x4e46d599dc876111c3D5eF24e6053565BF22F70b";
+const contractAddress = "0x6Aa52E13578D9A710C51eb004ae3d6f9BbCf5A53";
 
 export default function Home() {
   const [account, setAccount] = useState('');
@@ -38,6 +38,11 @@ export default function Home() {
   const [ticketDetails, setTicketDetails] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [error, setError] = useState('');
+  const [ticketNumberInput, setTicketNumberInput] = useState('');
+  const [selectedTicketForResale, setSelectedTicketForResale] = useState('');
+  const [selectedTicketForSwap, setSelectedTicketForSwap] = useState('');
+  const [desiredTicketForSwap, setDesiredTicketForSwap] = useState('');
+  
 
   useEffect(() => {
     const init = async () => {
@@ -109,32 +114,35 @@ export default function Home() {
         throw new Error('Please install MetaMask to use this application');
       }
 
-      const web3Modal = new Web3Modal({
-        network: "sepolia",
-        cacheProvider: true,
-      });
-
-      const connection = await web3Modal.connect();
-      const provider = new ethers.providers.Web3Provider(connection);
-      const signer = provider.getSigner();
-      const address = await signer.getAddress();
-
-      // Verify contract address
-      if (!contractAddress) {
-        throw new Error('Contract address not configured');
-      }
-
-      // Initialize contract with proper error handling
       try {
+        // Request account access
+        const accounts = await window.ethereum.request({ 
+          method: 'eth_requestAccounts' 
+        });
+        
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const address = accounts[0];
+
+        // Verify network
+        const network = await provider.getNetwork();
+        if (network.chainId !== 11155111) { // Sepolia chainId
+          setError('Please connect to Sepolia network');
+          return;
+        }
+
+        // Initialize contract
+        if (!contractAddress) {
+          throw new Error('Contract address not configured');
+        }
+
         const contract = new ethers.Contract(
           contractAddress,
           TicketSale.abi,
           signer
         );
 
-        // Verify contract is deployed by calling a view function
-        await contract.totalTickets();
-
+        // Set state
         setContract(contract);
         setAccount(address);
         setProvider(provider);
@@ -150,24 +158,36 @@ export default function Home() {
           setIsManager(managerAddress.toLowerCase() === address.toLowerCase());
         }
 
+        // Listen for network changes
+        window.ethereum.on("chainChanged", () => {
+          window.location.reload();
+        });
+
+        // Listen for account changes
+        window.ethereum.on("accountsChanged", () => {
+          window.location.reload();
+        });
+
       } catch (error) {
-        console.error("Contract initialization error:", error);
-        throw new Error('Failed to connect to the contract. Please check if you are on the Sepolia network.');
+        if (error.code === 4001) {
+          // User rejected request
+          setError('Please connect your wallet to continue');
+        } else if (error.message.includes('user rejected')) {
+          setError('Connection rejected. Please try again');
+        } else {
+          console.error("Connection error:", error);
+          setError('Failed to connect. Please try again');
+        }
+        throw error;
       }
-
-      // Listen for network changes
-      provider.provider.on("chainChanged", () => {
-        window.location.reload();
-      });
-
-      // Listen for account changes
-      provider.provider.on("accountsChanged", () => {
-        window.location.reload();
-      });
 
     } catch (error) {
       console.error("Web3 initialization error:", error);
-      setError(error.message);
+      if (error.code === 4001) {
+        setError('Please connect your wallet to continue');
+      } else {
+        setError(error.message || 'Failed to initialize Web3');
+      }
       throw error;
     }
   }
@@ -249,19 +269,6 @@ export default function Home() {
     
     setLoading(true);
     try {
-      // Check if user is manager
-      const isManagerAccount = await contract.isManager(account);
-      
-      // Only check for existing ticket if not manager
-      if (!isManagerAccount) {
-        const userTicket = await contract.getTicketOf(account);
-        if (userTicket.toString() !== '0') {
-          setError("You already own ticket #" + userTicket.toString());
-          setLoading(false);
-          return;
-        }
-      }
-
       // Get the ticket price
       const price = await contract.ticketPrice();
       console.log('Ticket price:', ethers.utils.formatEther(price), 'ETH');
@@ -297,12 +304,10 @@ export default function Home() {
     } catch (error) {
       console.error("Error buying ticket:", error);
       
-      if (error.message.includes("Already owns a ticket")) {
-        setError("You already own a ticket");
+      if (error.message.includes("Ticket already sold")) {
+        setError("This ticket has already been sold");
       } else if (error.code === 'INSUFFICIENT_FUNDS') {
         setError("Insufficient funds to cover gas fees");
-      } else if (error.message.includes("Ticket already sold")) {
-        setError("This ticket has already been sold");
       } else {
         setError("Failed to buy ticket. Please try again.");
       }
@@ -312,18 +317,73 @@ export default function Home() {
   }
 
   async function offerSwap() {
-    if (!contract || !swapTicketId) return;
+    if (!contract || !desiredTicketForSwap) {
+      setError("Please enter the ticket number you want to swap with");
+      return;
+    }
+
+    if (!ownedTicket) {
+      setError("You must own a ticket to offer a swap");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const tx = await contract.offerSwap(swapTicketId);
-      await tx.wait();
-      alert("Swap offer submitted successfully!");
-      setSwapTicketId('');
+      // Convert to number and validate
+      const targetTicketId = parseInt(desiredTicketForSwap);
+      if (isNaN(targetTicketId) || targetTicketId <= 0 || targetTicketId > 100) {
+        setError("Invalid ticket number");
+        return;
+      }
+
+      // First check if the target ticket exists and is owned
+      const details = await contract.getTicketDetails(targetTicketId);
+      
+      if (details.owner === ethers.constants.AddressZero) {
+        setError("This ticket is not owned by anyone");
+        return;
+      }
+
+      if (details.owner.toLowerCase() === account.toLowerCase()) {
+        setError("Cannot swap with your own ticket");
+        return;
+      }
+
+      if (details.isForSale) {
+        setError("Cannot swap with a ticket that is listed for resale");
+        return;
+      }
+
+      const tx = await contract.offerSwap(targetTicketId, {
+        gasLimit: 300000
+      });
+      console.log("Transaction sent:", tx.hash);
+      
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed:", receipt);
+
+      if (receipt.status === 1) {
+        setDesiredTicketForSwap('');
+        alert("Swap offer submitted successfully!");
+      } else {
+        throw new Error("Transaction failed");
+      }
     } catch (error) {
       console.error("Error offering swap:", error);
-      alert("Error: " + error.message);
+      if (error.message.includes("You don't own a ticket")) {
+        setError("You must own a ticket to offer a swap");
+      } else if (error.message.includes("Target ticket not owned")) {
+        setError("The ticket you want to swap with is not owned by anyone");
+      } else if (error.message.includes("Cannot swap with your own ticket")) {
+        setError("You cannot swap with your own ticket");
+      } else if (error.message.includes("Target ticket is listed for resale")) {
+        setError("Cannot swap with a ticket that is listed for resale");
+      } else {
+        setError(error.message || "Failed to offer swap");
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function acceptSwap(ticketId) {
@@ -342,36 +402,90 @@ export default function Home() {
   }
 
   async function listForResale() {
-    if (!contract || !resalePrice) return;
+    if (!contract || !selectedTicketForResale || !resalePrice) {
+      setError("Please enter both ticket number and price");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const priceInWei = ethers.utils.parseEther(resalePrice);
+      // Convert ticket ID to number
+      const ticketId = parseInt(selectedTicketForResale);
+      if (isNaN(ticketId) || ticketId <= 0 || ticketId > 100) {
+        setError("Invalid ticket number");
+        return;
+      }
+
+      // Convert price to Wei
+      const priceInWei = ethers.utils.parseEther(resalePrice.toString());
+      
+      // Call the contract function
       const tx = await contract.resaleTicket(priceInWei);
-      await tx.wait();
-      await loadResaleTickets();
-      setResalePrice('');
-      alert("Ticket listed for resale successfully!");
+      console.log("Transaction sent:", tx.hash);
+      
+      // Wait for confirmation
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed:", receipt);
+
+      if (receipt.status === 1) {
+        await loadResaleTickets();
+        setResalePrice('');
+        setSelectedTicketForResale('');
+        alert("Ticket listed for resale successfully!");
+      } else {
+        throw new Error("Transaction failed");
+      }
     } catch (error) {
       console.error("Error listing for resale:", error);
-      alert("Error: " + error.message);
+      if (error.message.includes("caller is not the owner")) {
+        setError("You don't own this ticket");
+      } else if (error.message.includes("invalid price")) {
+        setError("Invalid price amount");
+      } else {
+        setError(error.message || "Failed to list ticket for resale");
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function acceptResale(ticketId, price) {
-    if (!contract) return;
+    if (!contract) {
+      setError("Please connect your wallet first");
+      return;
+    }
+    
     setLoading(true);
     try {
-      const tx = await contract.acceptResale(ticketId, { value: price });
-      await tx.wait();
-      await loadTickets();
-      await loadResaleTickets();
-      await loadOwnedTicket();
+      const tx = await contract.acceptResale(ticketId, {
+        value: price.toString(),
+        gasLimit: 300000
+      });
+      
+      console.log("Transaction sent:", tx.hash);
+      const receipt = await tx.wait();
+      console.log("Transaction confirmed:", receipt);
+
+      if (receipt.status === 1) {
+        await loadAvailableTickets();
+        await loadResaleTickets();
+        await loadOwnedTicket();
+        alert("Resale ticket purchased successfully!");
+      } else {
+        throw new Error("Transaction failed");
+      }
     } catch (error) {
       console.error("Error accepting resale:", error);
-      alert("Error: " + error.message);
+      if (error.message.includes("insufficient funds")) {
+        setError("Insufficient funds to buy this ticket");
+      } else if (error.message.includes("not for resale")) {
+        setError("This ticket is not available for resale");
+      } else {
+        setError(error.message || "Failed to buy resale ticket");
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function checkIfManager() {
@@ -629,6 +743,23 @@ export default function Home() {
     );
   };
 
+  async function handleDirectTicketPurchase(e) {
+    e.preventDefault();
+    if (!ticketNumberInput) {
+      setError("Please enter a ticket number");
+      return;
+    }
+    
+    const ticketId = parseInt(ticketNumberInput);
+    if (isNaN(ticketId) || ticketId <= 0 || ticketId > 100) {
+      setError("Please enter a valid ticket number between 1 and 100");
+      return;
+    }
+
+    await buyTicket(ticketId);
+    setTicketNumberInput(''); // Clear input after purchase attempt
+  }
+
   return (
     <div className={`${styles.container} ${isDarkMode ? styles.containerDark : ''}`}>
       <ErrorMessage 
@@ -673,7 +804,17 @@ export default function Home() {
               </button>
             </div>
           ) : (
-            <button className={styles.connectButton} onClick={initWeb3}>
+            <button 
+              className={styles.connectButton} 
+              onClick={async () => {
+                try {
+                  await initWeb3();
+                } catch (error) {
+                  // Error is already handled in initWeb3
+                  console.log('Connection cancelled or failed');
+                }
+              }}
+            >
               Connect Wallet
             </button>
           )}
@@ -787,45 +928,56 @@ export default function Home() {
 
         <div className={styles.grid}>
           {/* Ticket Management Section */}
-          {ownedTicket && (
+          {account && (
             <div className={styles.card}>
-              <h2>Manage Your Ticket</h2>
+              <h2>Manage Your Tickets</h2>
               <div className={styles.managementSection}>
                 {/* Resale Section */}
                 <div className={styles.managementControl}>
                   <h3>List for Resale</h3>
-                  <input
-                    type="text"
-                    placeholder="Price in ETH"
-                    value={resalePrice}
-                    onChange={(e) => setResalePrice(e.target.value)}
-                    className={styles.managementInput}
-                  />
+                  <div className={styles.inputGroup}>
+                    <input
+                      type="number"
+                      placeholder="Ticket Number"
+                      value={selectedTicketForResale}
+                      onChange={(e) => setSelectedTicketForResale(e.target.value)}
+                      className={styles.managementInput}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Price in ETH"
+                      value={resalePrice}
+                      onChange={(e) => setResalePrice(e.target.value)}
+                      className={styles.managementInput}
+                    />
+                  </div>
                   <button 
                     onClick={listForResale}
                     className={styles.actionButton}
-                    disabled={!resalePrice}
+                    disabled={!selectedTicketForResale || !resalePrice || loading}
                   >
-                    <span>🏷️</span> List Ticket
+                    {loading ? 'Processing...' : <><span>🏷️</span> List Ticket</>}
                   </button>
                 </div>
 
                 {/* Swap Section */}
                 <div className={styles.managementControl}>
                   <h3>Offer Swap</h3>
-                  <input
-                    type="text"
-                    placeholder="Desired Ticket ID"
-                    value={swapTicketId}
-                    onChange={(e) => setSwapTicketId(e.target.value)}
-                    className={styles.managementInput}
-                  />
+                  <div className={styles.inputGroup}>
+                    <input
+                      type="number"
+                      placeholder="Desired Ticket Number"
+                      value={desiredTicketForSwap}
+                      onChange={(e) => setDesiredTicketForSwap(e.target.value)}
+                      className={styles.managementInput}
+                    />
+                  </div>
                   <button 
                     onClick={offerSwap}
                     className={styles.actionButton}
-                    disabled={!swapTicketId}
+                    disabled={!desiredTicketForSwap || loading}
                   >
-                    <span>🔄</span> Offer Swap
+                    {loading ? 'Processing...' : <><span>🔄</span> Offer Swap</>}
                   </button>
                 </div>
               </div>
@@ -835,6 +987,34 @@ export default function Home() {
           {/* Available Tickets with fixed price display */}
           <div className={styles.card}>
             <h2>Available Tickets</h2>
+            
+            {/* Add this direct purchase section */}
+            <div className={styles.directPurchaseSection}>
+              <form onSubmit={handleDirectTicketPurchase} className={styles.directPurchaseForm}>
+                <div className={styles.inputGroup}>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={ticketNumberInput}
+                    onChange={(e) => setTicketNumberInput(e.target.value)}
+                    placeholder="Enter ticket number (1-100)"
+                    className={styles.ticketInput}
+                  />
+                  <button 
+                    type="submit"
+                    className={styles.directBuyButton}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processing...' : 'Buy Ticket'}
+                  </button>
+                </div>
+                <p className={styles.ticketInputHelper}>
+                  Enter the specific ticket number you want to purchase
+                </p>
+              </form>
+            </div>
+
             {loading ? (
               <div className={styles.loader}>Loading...</div>
             ) : (
@@ -854,12 +1034,10 @@ export default function Home() {
                       <button 
                         className={styles.buyButton}
                         onClick={() => buyTicket(ticket.id)}
-                        disabled={loading || (!isManager && ownedTicket !== null)}
-                        title={!isManager && ownedTicket ? `You already own ticket #${ownedTicket}` : ''}
+                        disabled={loading}
+                        title={loading ? 'Processing...' : ''}
                       >
-                        {loading ? 'Processing...' : 
-                         (!isManager && ownedTicket) ? 'Already Own Ticket' : 
-                         'Buy Ticket'}
+                        {loading ? 'Processing...' : 'Buy Ticket'}
                       </button>
                     </div>
                   ))
@@ -877,26 +1055,30 @@ export default function Home() {
             <h2>Resale Tickets</h2>
             <div className={styles.ticketList}>
               {resaleTickets.length > 0 ? (
-                resaleTickets.map((ticket, index) => (
-                  <div key={index} className={styles.ticket}>
-                    <div>
-                      <p>Ticket #{ticket.ticketId}</p>
-                      <p>Price: {ethers.utils.formatEther(ticket.price)} ETH</p>
-                      <p className={styles.ticketType}>
-                        {parseInt(ticket.ticketId) <= 10000 ? 'Monday' :
-                         parseInt(ticket.ticketId) <= 20000 ? 'Tuesday' :
-                         parseInt(ticket.ticketId) <= 30000 ? 'Wednesday' :
-                         parseInt(ticket.ticketId) <= 40000 ? 'Thursday' :
-                         parseInt(ticket.ticketId) <= 50000 ? 'Friday' : 'Weekend'}
+                resaleTickets.map((ticket) => (
+                  <div key={ticket.ticketId} className={styles.ticketCard}>
+                    <div className={styles.ticketInfo}>
+                      <h3>Ticket #{ticket.ticketId}</h3>
+                      <p className={styles.ticketDay}>
+                        {getTicketDay(ticket.ticketId)}
+                      </p>
+                      <p className={styles.ticketPrice}>
+                        Price: {ethers.utils.formatEther(ticket.price)} ETH
                       </p>
                     </div>
-                    <button onClick={() => acceptResale(ticket.ticketId, ticket.price)}>
-                      Buy Resale Ticket
+                    <button 
+                      onClick={() => acceptResale(ticket.ticketId, ticket.price)}
+                      className={styles.buyButton}
+                      disabled={loading}
+                    >
+                      {loading ? 'Processing...' : 'Buy Resale Ticket'}
                     </button>
                   </div>
                 ))
               ) : (
-                <p>No tickets available for resale</p>
+                <div className={styles.noTickets}>
+                  <p>No tickets available for resale</p>
+                </div>
               )}
             </div>
           </div>
